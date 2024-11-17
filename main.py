@@ -11,7 +11,8 @@ from tkinter import messagebox
 
 facebookUrl = "https://facebook.com"
 groupFacebookUrl = facebookUrl + "/groups/sharekhoahoccap3"
-driverPath = "D:\Python\msedgedriver.exe"
+driverPath = "/Users/tv/Documents/Automatic/macos/chromedriver"
+# 
 # listGroupFacebook = ["sharekhoahoccap3", "753195100086574", "2165358637179256"]
 
 root = tk.Tk()
@@ -21,7 +22,7 @@ root.geometry("800x600")
 
 def openFacebook(username, password, content):
     service = Service(driverPath)
-    driver = webdriver.Edge(service=service)
+    driver = webdriver.Chrome(service=service)
     driver.get(facebookUrl)
 
     username_box = driver.find_element(By.ID, "email")
