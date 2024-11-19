@@ -1,21 +1,46 @@
 from selenium import webdriver
-from selenium.webdriver.edge.service import Service
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from colorama import Fore, Style
-from pynput.keyboard import Controller, Key
+from pynput.keyboard import Key, Controller as KeyboardController
+from pynput.mouse import Controller as MouseController, Button
 
 from time import sleep
 import tkinter as tk
 from tkinter import messagebox
-import os
 
 facebookUrl = "https://facebook.com"
-groupFacebookUrl = facebookUrl + "/groups/sharekhoahoccap3"
-driverPath = "/Users/tv/Documents/Automatic/macos/chromedriver"
-# listGroupFacebook = ["sharekhoahoccap3", "753195100086574", "2165358637179256"]
+groupsFacebookUrl = [
+    "1224323587769514",
+    "chungcu9999",
+    "muabanchungcu66",
+    "224257585866951",
+    "1294145241531831",
+    "4026316140810705",
+    "1745687582375612",
+    "1608065743039124",
+    "chothuechungcuminihanoii",
+    "330494224423543",
+    "cho.thue.can.ho.chung.cu.tai.hanoi",
+    "1466279290584312",
+    "tglandmark.98",
+    "903887330495903",
+    "415565940789802",
+    "252597635198019",
+    "chungcuminihanoigiaree",
+    "1215795799391969",
+    "2149125652110389",
+    "1539608956964434",
+]
+
+driverPath = "D:\Automatic\chromedriver.exe"
+username = "0975460402"
+password = "0338311009@#quanhq"
+file_path = "D:\Automatic\imgs"
 
 root = tk.Tk()
 root.title("Automatic Facebook")
@@ -23,10 +48,24 @@ root.geometry("800x600")
 
 
 def openFacebook(content):
-    username = "aduc04915@gmail.com"
-    password = "0338311009@#quanhq"
+    option = Options()
+    # chorme setting options
+    option.add_experimental_option("excludeSwitches", ["enable-automation"])
+    option.add_experimental_option("useAutomationExtension", False)
+    option.add_argument("--disable-infobars")
+    option.add_argument("--disable-extensions")
+    # chorme remove allow notification
+    option.add_experimental_option(
+        "prefs",
+        {
+            "profile.default_content_setting_values.notifications": 2,
+        },
+    )
+    # config selenium
     service = Service(driverPath)
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome(service=service, options=option)
+    keyboard = KeyboardController()
+    mouse = MouseController()
     driver.get(facebookUrl)
 
     username_box = driver.find_element(By.ID, "email")
@@ -37,56 +76,11 @@ def openFacebook(content):
     password_box.send_keys(password)
     button_login.click()
 
-    logWithColor("Click login wait 1 second")
+    logWithColor("Click login")
     sleep(1)
 
-    driver.find_element(By.TAG_NAME, "body").send_keys(Keys.COMMAND + "t")
-    driver.get(groupFacebookUrl)
-
-    logWithColor("Open new tab wait 1 second")
-    sleep(1)
-    driver.find_element(By.TAG_NAME, "body").click()
-
-    findWriteFeedInGroup = WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located(
-            (By.XPATH, '//div[span[text()="Bạn viết gì đi..."]]')
-        )
-    )
-
-    logWithColor("Feed apear")
-    sleep(1)
-    findWriteFeedInGroup.click()
-
-    writeToFeedGroup = WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.XPATH, '//div[@class="_1mf _1mj"]'))
-    )
-    writeToFeedGroup.send_keys(content)
-    logWithColor("Write complete")
-
-    upload_file = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "images", "1.jpg")
-    )
- 
-    addImage = driver.find_elements(
-        By.XPATH,
-        '//div[@class="x6s0dn4 x78zum5 xl56j7k x1n2onr6 x5yr21d xh8yej3"]',
-    )
-    addImage[1].click()
-    
-    keyboard = Controller()
-    keyboard.type(upload_file)
-    keyboard.press(Key.enter)
-    keyboard.release(Key.enter)
-    logWithColor("Send image to feed")
-    # postToFeed = driver.find_element(By.XPATH, '//div[span[span[text()="Đăng"]]]')
-    # postToFeed.click()
-
-    sleep(2)
-    logWithColor("Post to feed, wait 2 second")
-
-    logWithColor("Wait 5 second")
-    sleep(5)
-    logWithColor("Exit")
+    for group in groupsFacebookUrl:
+        post_content(keyboard, content, mouse, driver, group)
 
     driver.quit()
 
@@ -100,13 +94,84 @@ def submit_form():
 
     if content:
         openFacebook(content)
+        sleep(100)
     else:
         messagebox.showwarning("Error", "Form is empty!")
+
+
+def post_content(keyboard, content, mouse, driver, group):
+    groupFacebookUrl = facebookUrl + "/groups/" + group
+    driver.find_element(By.TAG_NAME, "body").send_keys(Keys.COMMAND + "t")
+    # open group
+    driver.get(groupFacebookUrl)
+    logWithColor(f"Open {group}")
+    sleep(2)
+    # open feed
+    findFeedInGroup = WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located(
+            (
+                By.XPATH,
+                '//div[@class="xi81zsa x1lkfr7t xkjl1po x1mzt3pk xh8yej3 x13faqbe"]/span[text()="Bạn viết gì đi..."]',
+            )
+        )
+    )
+    findFeedInGroup.click()
+    logWithColor("Feed apear")
+    sleep(2)
+    # write feed
+    writeToFeedGroup = WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located((By.XPATH, '//div[@class="_1mf _1mj"]'))
+    )
+    writeToFeedGroup.send_keys(content)
+    logWithColor("Write complete")
+    sleep(1)
+    # click open input image
+    openImage = driver.find_elements(
+        By.XPATH,
+        '//div[@class="x6s0dn4 x78zum5 xl56j7k x1n2onr6 x5yr21d xh8yej3"]',
+    )
+    openImage[1].click()
+    logWithColor("Click to open file explorer")
+    sleep(1)
+    select_all_file(keyboard, mouse)
+    logWithColor("Send image to feed")
+    sleep(2)
+    # post to feed
+
+    # postToFeed = driver.find_element(By.XPATH, '//div[span[span[text()="Đăng"]]]')
+    # postToFeed.click()
+    # sleep(5)
+    logWithColor("Complete " + group)
+
+
+def select_all_file(keyboard, mouse):
+    keyboard.type(file_path)
+    sleep(0.5)
+    logWithColor("Enter file path")
+
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
+    logWithColor("Click open")
+
+    mouse.position = (120, 150)
+    sleep(0.5)
+    mouse.click(Button.left, 1)
+
+    keyboard.press(Key.ctrl)
+    keyboard.press("a")
+
+    keyboard.release("a")
+    keyboard.release(Key.ctrl)
+    logWithColor("Select all image")
+
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
 
 
 tk.Label(root, text="Content:", font=("Arial", 12)).grid(
     row=1, column=0, padx=10, pady=5, sticky="w"
 )
+
 text_box = tk.Text(root, font=("Arial", 12), height=20, width=100, wrap="word")
 text_box.grid(row=1, column=1, padx=10, pady=5)
 
