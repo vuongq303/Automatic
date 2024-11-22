@@ -15,17 +15,15 @@ from tkinter import messagebox
 
 facebookUrl = "https://facebook.com"
 groupsFacebookUrl = [
+    "386614282654291",
     "1224323587769514",
     "chungcu9999",
-    "muabanchungcu66",
     "224257585866951",
     "1294145241531831",
     "4026316140810705",
-    "1745687582375612",
     "1608065743039124",
     "chothuechungcuminihanoii",
     "330494224423543",
-    "cho.thue.can.ho.chung.cu.tai.hanoi",
     "1466279290584312",
     "tglandmark.98",
     "903887330495903",
@@ -33,14 +31,19 @@ groupsFacebookUrl = [
     "252597635198019",
     "chungcuminihanoigiaree",
     "1215795799391969",
-    "2149125652110389",
     "1539608956964434",
+    "1437237960311125",
+    "1313925196663431",
+    "chothuephongtrochungcuhanoi",
+    "193554109987236",
+    "164150650736749",
+    "batdongsan2022",
 ]
 
 driverPath = "D:\Automatic\chromedriver.exe"
 username = "0975460402"
 password = "0338311009@#quanhq"
-file_path = "D:\Automatic\imgs"
+file_path = "D:\Automatic\images"
 
 root = tk.Tk()
 root.title("Automatic Facebook")
@@ -131,6 +134,12 @@ def post_content(keyboard, content, mouse, driver, group):
         '//div[@class="x6s0dn4 x78zum5 xl56j7k x1n2onr6 x5yr21d xh8yej3"]',
     )
     openImage[1].click()
+    sleep(0.5)
+    openInputImage = driver.find_element(
+        By.XPATH,
+        '//div[span[text()="Thêm ảnh/video"]]',
+    )
+    openInputImage.click()
     logWithColor("Click to open file explorer")
     sleep(1)
     select_all_file(keyboard, mouse)
@@ -168,12 +177,8 @@ def select_all_file(keyboard, mouse):
     keyboard.release(Key.enter)
 
 
-tk.Label(root, text="Content:", font=("Arial", 12)).grid(
-    row=1, column=0, padx=10, pady=5, sticky="w"
-)
-
 text_box = tk.Text(root, font=("Arial", 12), height=20, width=100, wrap="word")
-text_box.grid(row=1, column=1, padx=10, pady=5)
+text_box.grid(row=1, column=0, padx=10, pady=5)
 
 submit_button = tk.Button(root, text="Gửi", font=("Arial", 12), command=submit_form)
 submit_button.grid(row=2, column=0, columnspan=2, pady=10)
