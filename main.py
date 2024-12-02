@@ -2,7 +2,7 @@ from time import sleep
 import tkinter as tk
 from tkinter import ttk
 from sources.functions.view import show_frame, ask_for_input
-from sources.run import submit_form
+from sources.run import submit_form, chooseFile
 
 root = tk.Tk()
 root.title("Automatic Facebook")
@@ -53,10 +53,15 @@ input_password.grid(row=0, column=1, padx=15)
 
 frameImage = tk.Frame(frameMain, height=10)
 frameImage.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-lbl_image = tk.Label(frameImage, text="Path Image:", font=("Arial", 10))
-lbl_image.grid(row=0, column=0, padx=5)
-input_image = tk.Entry(frameImage, font=("Arial", 10))
-input_image.grid(row=0, column=1, padx=5)
+btnOpenFile = tk.Button(
+    frameImage,
+    text="Choose file",
+    font=("Arial", 10),
+    command=lambda: chooseFile(label_text=lbl_image),
+)
+btnOpenFile.grid(row=0, column=0, pady=10, sticky="w", padx=10)
+lbl_image = tk.Label(frameImage, text="No file choose", font=("Arial", 10))
+lbl_image.grid(row=0, column=1, padx=5)
 
 frameContent = tk.Frame(frameMain, height=10)
 frameContent.grid(row=3, column=0, padx=10, pady=10, sticky="w")
@@ -110,7 +115,10 @@ def adjust_tree_columns(event):
 
 
 submit_button = tk.Button(
-    frameMain, text="Gửi", font=("Arial", 12), command=lambda: submit_form(text_box)
+    frameMain,
+    text="Gửi",
+    font=("Arial", 12),
+    command=lambda: submit_form(text_box, lbl_image),
 )
 submit_button.grid(row=4, column=0, columnspan=2, pady=10)
 

@@ -9,15 +9,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from pynput.keyboard import Controller as KeyboardController
 from tkinter import messagebox
+from tkinter.filedialog import askopenfilename
 
 username = "0975460402"
 password = "0338311009@#quanhq"
-file_path = "D:\Automatic\images\z6087732207028_27cef68c2ef88e439812bb7b9e319f06.jpg"
 
 
-def openFacebook(content):
+def openFacebook(content, file_path):
     option = Options()
     # chorme setting options
     option.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -34,7 +33,6 @@ def openFacebook(content):
     # config selenium
     service = Service(driverPath)
     driver = webdriver.Chrome(service=service, options=option)
-    keyboard = KeyboardController()
     driver.get(facebookUrl)
 
     username_box = driver.find_element(By.ID, "email")
@@ -49,12 +47,12 @@ def openFacebook(content):
     sleep(1)
 
     for group in groupsFacebookUrl:
-        post_content(keyboard, content, driver, group)
+        post_content(content, driver, group, file_path)
 
     driver.quit()
 
 
-def post_content(keyboard, content, driver, group):
+def post_content(content, driver, group, file_path):
     groupFacebookUrl = facebookUrl + "/groups/" + group
     driver.find_element(By.TAG_NAME, "body").send_keys(Keys.COMMAND + "t")
     # open group
@@ -90,17 +88,23 @@ def post_content(keyboard, content, driver, group):
     logWithColor("Send image to feed")
     sleep(1)
     # post to feed
-    # postToFeed = driver.find_element(By.XPATH, '//div[span[span[text()="Đăng"]]]')
-    # postToFeed.click()
+    postToFeed = driver.find_element(By.XPATH, '//div[span[span[text()="Đăng"]]]')
+    postToFeed.click()
     sleep(5)
     logWithColor("Complete " + group)
 
 
-def submit_form(text_box):
+def submit_form(text_box, file_input):
     content = text_box.get("1.0", "end-1c")
+    file_path = file_input.cget("text")
 
-    if content:
-        openFacebook(content)
-        sleep(100)
+    if content and file_path:
+        openFacebook(content, file_path)
+        sleep(1)
     else:
         messagebox.showwarning("Error", "Form is empty!")
+
+
+def chooseFile(label_text):
+    filename = askopenfilename()
+    label_text.config(text=filename)
